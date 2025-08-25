@@ -79,7 +79,7 @@ export default function DeleteConfirmationModal({
               {message}
             </p>
             <p className="text-xs text-gray-400 mb-6">
-              <strong className="text-gray-200">"{itemName}"</strong> will be permanently deleted. This action cannot be undone.
+              <strong className="text-gray-200">&quot;{itemName}&quot;</strong> will be permanently deleted. This action cannot be undone.
             </p>
           </div>
 

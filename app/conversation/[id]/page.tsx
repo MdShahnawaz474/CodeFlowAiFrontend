@@ -516,7 +516,7 @@ export default function ConversationPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Conversation Not Found</h2>
-          <p className="text-gray-400 mb-6">This conversation doesn't exist or has been deleted.</p>
+          <p className="text-gray-400 mb-6">This conversation doesn&apos;t exist or has been deleted.</p>
           <button
             onClick={() => router.push('/chat')} // ✅ Update route as needed
             className="px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 rounded-lg text-white font-medium transition-all"
