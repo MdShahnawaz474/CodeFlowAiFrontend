@@ -17,19 +17,24 @@ import {
 import "@/app/globals.css";
 import { APP_NAME, formatTime } from "@/utils";
 import Link from "next/link";
+import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
+import DeleteConfirmationModal from "./DeleteConversationModel";
 
 export default function Sidebar() {
   const { isOpen, toggle } = useSidebar();
+    const deleteConfirmation = useDeleteConfirmation();
 
-  const {
+ const {
     chats,
     loading,
     error,
     createNewChat,
     deleteChat,
-    actionLoading,
+    createLoading, // ✅ Use createLoading instead of actionLoading
+    deleteLoading,
     clearError,
   } = useChatContext();
+
 
   // Create new chat handler
   const handleCreateNewChat = async () => {
@@ -37,7 +42,6 @@ export default function Sidebar() {
       const newChat = await createNewChat(
         "Hello! I'd like to start a new conversation."
       );
-      // Navigate to the new chat after creation
       if (newChat) {
         window.location.href = `/conversation/${newChat._id}`;
       }
@@ -48,16 +52,31 @@ export default function Sidebar() {
   };
 
   // Delete chat handler
+  // const handleDeleteChat = async (chatId: string, e: React.MouseEvent) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+
+  //   if (confirm("Are you sure you want to delete this conversation?")) {
+  //     try {
+  //       await deleteChat(chatId);
+  //     } catch (error) {
+  //       console.error("Failed to delete chat:", error);
+  //     }
+  //   }
+  // };
+
   const handleDeleteChat = async (chatId: string, e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
 
-    if (confirm("Are you sure you want to delete this conversation?")) {
-      try {
+    deleteConfirmation.showConfirmation({
+      title: "Delete Conversation",
+      message: "Are you sure you want to delete this conversation?",
+      itemName: chats.find(chat => chat._id === chatId)?.title || "this chat",
+      onConfirm: async () => {
         await deleteChat(chatId);
-      } catch (error) {
-        console.error("Failed to delete chat:", error);
-      }
-    }
+      },
+    });
   };
 
   return (
@@ -93,7 +112,7 @@ export default function Sidebar() {
         </button>
 
         {/* Logo & Title */}
-        <div className="relative z-10 flex items-center mb-4 sm:mb- pr-10 lg:pr-0">
+        <div className="relative z-10 flex items-center mb-3 sm:mb-4 pr-10 lg:pr-0">
           <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-xl flex items-center justify-center mr-3 shadow-lg">
             <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </div>
@@ -110,16 +129,16 @@ export default function Sidebar() {
         {/* New Conversation Button */}
         <button
           onClick={handleCreateNewChat}
-          disabled={actionLoading}
-          className="w-full mb-4 sm:mb-6 px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center group hover:shadow-purple-500/25 hover:shadow-2xl transform hover:scale-[1.02] text-sm sm:text-base"
+          disabled={createLoading} // ✅ Use createLoading instead of actionLoading
+          className="w-full mb-4 sm:mb-5 px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center group hover:shadow-purple-500/25 hover:shadow-2xl transform hover:scale-[1.02] text-sm sm:text-base"
         >
-          {actionLoading ? (
+          {createLoading ? ( // ✅ Use createLoading
             <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mr-2"></div>
           ) : (
             <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
           )}
           <span className="font-semibold">
-            {actionLoading ? "Creating..." : "New Chat"}
+            {createLoading ? "Creating..." : "New Chat"} {/* ✅ Use createLoading */}
           </span>
         </button>
 
@@ -156,9 +175,9 @@ export default function Sidebar() {
           </div>
         )}
 
-        {/* 🎨 BEAUTIFUL SCROLLBAR: Conversations List */}
+        {/* Conversations List */}
         {chats.length > 0 && (
-          <div className="flex-1 overflow-y-auto space-y-2 sm:space-y-3 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto space-y-2 sm:space-y-3  scrollbar-custom">
             {chats.map((chat) => (
               <Link
                 href={`/conversation/${chat._id}`}
@@ -166,10 +185,7 @@ export default function Sidebar() {
                 className="block"
                 onClick={() => toggle()}
               >
-                <div
-                  className="p-3 sm:p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 transition-all duration-300 cursor-pointer group backdrop-blur-sm"
-                  onClick={() => toggle()}
-                >
+                <div className=" p-3 sm:p-4 rounded-xl bg-white/1 hover:bg-white/5 border border-white/10 hover:border-purple-500/50 transition-all duration-300 cursor-pointer group backdrop-blur-sm">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-medium text-sm text-white group-hover:text-purple-300 transition-colors truncate pr-2">
                       {chat.title}
@@ -179,13 +195,15 @@ export default function Sidebar() {
                         {formatTime(chat.startTime)}
                       </span>
                       <button
-                        onClick={(e) =>{ handleDeleteChat(chat._id, e)
-                           e.preventDefault();
-    e.stopPropagation();
-                        }}
-                        className=" opacity-0 group-hover:opacity-100 hover:bg-red-500/20 rounded transition-all "
+                         onClick={(e) => handleDeleteChat(chat._id, e)} // ✅ Pass chat title
+                        disabled={deleteLoading} // ✅ Use deleteLoading
+                        className="p-1 opacity-0 group-hover:opacity-100 hover:bg-red-500/20 rounded transition-all disabled:opacity-50"
                       >
-                        <TrashIcon className="w-5 h-5 text-red-400 cursor-pointer" />
+                        {deleteLoading ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-400"></div>
+                        ) : (
+                          <TrashIcon className="w-4 h-4 text-red-400" />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -218,6 +236,15 @@ export default function Sidebar() {
           </div>
         </div>
       </aside>
+         <DeleteConfirmationModal
+        isOpen={deleteConfirmation.isOpen}
+        onClose={deleteConfirmation.hideConfirmation}
+        onConfirm={deleteConfirmation.handleConfirm}
+        title={deleteConfirmation.title}
+        message={deleteConfirmation.message}
+        itemName={deleteConfirmation.itemName}
+        isDeleting={deleteConfirmation.isDeleting}
+      />  
     </>
   );
 }

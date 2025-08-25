@@ -30,23 +30,20 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
+// types/conversation.ts
 export interface ChatContextType {
-  // State
   chats: Conversation[];
   loading: boolean;
   error: string | null;
-  actionLoading: boolean; // ✅ Add this
-
-  // Basic Actions
-  addChats: (chat: Conversation) => void;
-  updateChat: (updatedChat: Conversation) => void;
+  actionLoading: boolean;  // For message sending
+  createLoading: boolean;  // ✅ Add this
+  deleteLoading: boolean;  // ✅ Add this
+  
+  createNewChat: (prompt: string, model?: string) => Promise<Conversation>;
+  sendMessage: (chatId: string, prompt: string) => Promise<Conversation>;
   deleteChat: (chatId: string) => Promise<void>;
   refreshChats: () => Promise<void>;
   clearError: () => void;
-
-  // ✅ Add these new functions
-  createNewChat: (prompt: string, model?: string) => Promise<Conversation>;
-  sendMessage: (chatId: string, prompt: string) => Promise<Conversation>;
   getChatById: (chatId: string) => Conversation | undefined;
 }
 

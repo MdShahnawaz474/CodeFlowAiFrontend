@@ -203,63 +203,22 @@ export function EmptyState({
 // ==================== CONTEXT LOGIC ====================
 
 // Create context with proper typing
+
 export const chatContext = createContext<ChatContextType | undefined>(undefined);
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [chats, setChats] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [actionLoading, setActionLoading] = useState(false); // For individual actions
-
-  // Enhanced fetch chats function with better error handling
-  const fetchChats = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch(`${API_BASE_URL}/conversations`, {
-        method: "GET",
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('Conversations endpoint not found. Please check your API configuration.');
-        } else if (response.status === 500) {
-          throw new Error('Server error. Please try again later.');
-        } else if (response.status === 401) {
-          throw new Error('Unauthorized. Please check your authentication.');
-        } else {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-      }
-
-      const chatsData = await response.json();
-      setChats(Array.isArray(chatsData) ? chatsData : []);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch conversations';
-      setError(errorMessage);
-      console.error('Error fetching chats:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Load chats on mount
-  useEffect(() => {
-    fetchChats();
-  }, []);
-
-  // Add new chat with optimistic update
-  const addChats = (chat: Conversation) => {
-    setChats(prev => [chat, ...prev]);
-  };
+  
+  // ✅ Separate loading states
+  const [actionLoading, setActionLoading] = useState(false); // For sending messages only
+  const [createLoading, setCreateLoading] = useState(false); // For creating chats only
+  const [deleteLoading, setDeleteLoading] = useState(false); // For deleting chats
 
   // Create new chat
   const createNewChat = async (prompt: string, model: string = 'gemini-2.5-flash') => {
-    setActionLoading(true);
+    setCreateLoading(true); // ✅ Use createLoading instead of actionLoading
     setError(null);
     
     try {
@@ -276,27 +235,20 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const newChat = await response.json();
-      addChats(newChat);
+      setChats(prev => [newChat, ...prev]); // Add to chats immediately
       return newChat;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create conversation';
       setError(errorMessage);
       throw err;
     } finally {
-      setActionLoading(false);
+      setCreateLoading(false); // ✅ Reset createLoading
     }
-  };
-
-  // Update existing chat
-  const updateChat = (updatedChat: Conversation) => {
-    setChats(prev => 
-      prev.map(chat => chat._id === updatedChat._id ? updatedChat : chat)
-    );
   };
 
   // Send message to chat
   const sendMessage = async (chatId: string, prompt: string) => {
-    setActionLoading(true);
+    setActionLoading(true); // ✅ Keep actionLoading for message sending only
     setError(null);
     
     try {
@@ -313,7 +265,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const updatedChat = await response.json();
-      updateChat(updatedChat);
+      setChats(prev => 
+        prev.map(chat => chat._id === updatedChat._id ? updatedChat : chat)
+      );
       return updatedChat;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
@@ -324,11 +278,11 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Delete chat with API call and optimistic update
+  // Delete chat
   const deleteChat = async (chatId: string) => {
+    setDeleteLoading(true); // ✅ Use deleteLoading
     setError(null);
     
-    // Optimistic update
     const previousChats = chats;
     setChats(prev => prev.filter(chat => chat._id !== chatId));
     
@@ -341,18 +295,50 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (!response.ok) {
-        // Revert optimistic update
         setChats(previousChats);
         throw new Error(`Failed to delete conversation: ${response.status}`);
       }
-
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to delete conversation';
       setError(errorMessage);
-      // Revert optimistic update
       setChats(previousChats);
       throw err;
+    } finally {
+      setDeleteLoading(false);
     }
+  };
+
+  // Fetch chats
+  const fetchChats = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/conversations`, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const chatsData = await response.json();
+      setChats(Array.isArray(chatsData) ? chatsData : []);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch conversations';
+      setError(errorMessage);
+      console.error('Error fetching chats:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get chat by ID
+  const getChatById = (chatId: string): Conversation | undefined => {
+    return chats.find(chat => chat._id === chatId);
   };
 
   // Refresh chats
@@ -365,23 +351,23 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
   };
 
-  // Get chat by ID
-  const getChatById = (chatId: string): Conversation | undefined => {
-    return chats.find(chat => chat._id === chatId);
-  };
+  // Load chats on mount
+  useEffect(() => {
+    fetchChats();
+  }, []);
 
   const contextValue: ChatContextType = {
     chats,
     loading,
     error,
-    actionLoading,
-    addChats,
-    updateChat,
+    actionLoading,    // ✅ For message sending only
+    createLoading,    // ✅ For chat creation
+    deleteLoading,    // ✅ For chat deletion
+    createNewChat,
+    sendMessage,
     deleteChat,
     refreshChats,
     clearError,
-    createNewChat,
-    sendMessage,
     getChatById,
   };
 
@@ -391,6 +377,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     </chatContext.Provider>
   );
 };
+
 
 // Custom hook to use chat context
 export const useChatContext = () => {
