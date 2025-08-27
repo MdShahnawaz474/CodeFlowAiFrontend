@@ -3,6 +3,7 @@
 import { API_BASE_URL } from "@/lib/axios";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Conversation, ChatContextType } from "@/types/conversation";
+import { useAuth } from "./AuthContext";
 
 // ==================== LOADING COMPONENTS ====================
 
@@ -207,6 +208,7 @@ export function EmptyState({
 export const chatContext = createContext<ChatContextType | undefined>(undefined);
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
+   const { token } = useAuth();
   const [chats, setChats] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -218,6 +220,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
   // Create new chat
   const createNewChat = async (prompt: string, model: string = 'gemini-2.5-flash') => {
+     if (!token) throw new Error("Not authenticated");
     setCreateLoading(true); // ✅ Use createLoading instead of actionLoading
     setError(null);
     
@@ -226,6 +229,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
+           'Authorization': `Bearer ${token}`,  
         },
         body: JSON.stringify({ prompt, model }),
       });
@@ -256,6 +260,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         method: "PUT",
         headers: {
           'Content-Type': 'application/json',
+           'Authorization': `Bearer ${token}`,  
         },
         body: JSON.stringify({ prompt }),
       });
@@ -291,6 +296,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         method: "DELETE",
         headers: {
           'Content-Type': 'application/json',
+           'Authorization': `Bearer ${token}`,  
         },
       });
 
@@ -310,6 +316,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch chats
   const fetchChats = async () => {
+    if (!token) return; // Don't fetch if unauthenticated
     setLoading(true);
     setError(null);
     
@@ -318,6 +325,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         method: "GET",
         headers: {
           'Content-Type': 'application/json',
+           'Authorization': `Bearer ${token}`,  
         },
       });
 
@@ -351,10 +359,11 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
   };
 
-  // Load chats on mount
+
   useEffect(() => {
-    fetchChats();
-  }, []);
+    if (token) fetchChats();
+    else setChats([]); // If logout, reset chat
+  }, [token]);
 
   const contextValue: ChatContextType = {
     chats,

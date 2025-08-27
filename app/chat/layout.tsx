@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const SidebarContext = createContext<{
   isOpen: boolean;
@@ -17,6 +18,7 @@ export default function ChatLayout({ children }: { children: React.ReactNode }) 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
+    <ProtectedRoute>
     <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white min-h-screen overflow-hidden">
       <SidebarContext.Provider
         value={{ isOpen: sidebarOpen, toggle: () => setSidebarOpen(!sidebarOpen) }}
@@ -48,6 +50,6 @@ export default function ChatLayout({ children }: { children: React.ReactNode }) 
           </div>
         </div>
       </SidebarContext.Provider>
-    </div>
+    </div></ProtectedRoute>
   );
 }

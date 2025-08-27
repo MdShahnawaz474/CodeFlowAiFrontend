@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ChatProvider } from "@/Store/ChatContex";
+import { AuthProvider } from "@/Store/AuthContext";
 
 
 
@@ -20,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body >
+        <AuthProvider>
          <ChatProvider>
           {children}
         </ChatProvider>
+        </AuthProvider>
       </body>
     </html>
   );
