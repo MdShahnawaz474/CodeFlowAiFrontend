@@ -8,7 +8,8 @@ import {
   ChatBubbleLeftRightIcon,
   RocketLaunchIcon,
   ArrowRightIcon,
-  CheckIcon
+  CheckIcon,
+  BellAlertIcon
 } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import { APP_NAME } from '@/utils';
@@ -64,7 +65,7 @@ export default function LandingPage() {
       <a href="#about" className="text-gray-300 hover:text-white transition-colors">About</a>
       <button 
         onClick={handleGetStarted}
-        className="px-6 py-2 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 rounded-lg transition-all transform hover:scale-105"
+        className="px-6 py-2 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 rounded-lg transition-all transform hover:scale-105 cursor-pointer"
       >
         Get Started
       </button>
@@ -123,7 +124,7 @@ export default function LandingPage() {
                     <div className="text-white">Create a futuristic logo for my startup</div>
                   </div>
                   <div className="bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-purple-500/30 rounded-2xl p-4 text-left">
-                    <div className="text-sm text-purple-300 mb-2">Gemini AI</div>
+                    <div className="text-sm text-purple-300 mb-2">{APP_NAME}</div>
                     <div className="text-white">I&apos;d love to help you create a futuristic logo! Let me suggest some modern design concepts...</div>
                   </div>
                 </div>
@@ -187,6 +188,7 @@ export default function LandingPage() {
         </div>
       </section>
 
+      
       {/* Pricing Section */}
       <section id="pricing" className="relative z-10 px-6 py-20">
         <div className="max-w-7xl mx-auto">
@@ -198,7 +200,7 @@ export default function LandingPage() {
               Start free and upgrade as you grow
             </p>
           </div>
-
+          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Free Plan */}
             <div className="p-8 backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl">
@@ -218,7 +220,7 @@ export default function LandingPage() {
                   Email support
                 </li>
               </ul>
-              <button className="w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg transition-all">
+              <button onClick={handleGetStarted} className="w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg transition-all hover:cursor-pointer">
                 Get Started
               </button>
             </div>
@@ -251,7 +253,7 @@ export default function LandingPage() {
                 </li>
               </ul>
               <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 rounded-lg transition-all">
-                Start Pro Trial
+                {/* Start Pro Trial */} Coming Soon <BellAlertIcon className="w-5 h-5 inline-block ml-2" />
               </button>
             </div>
 
@@ -278,36 +280,94 @@ export default function LandingPage() {
                 </li>
               </ul>
               <button className="w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg transition-all">
-                Contact Sales
+                {/* Contact Sales */} Coming Soon <BellAlertIcon className="w-5 h-5 inline-block ml-2" />
               </button>
             </div>
           </div>
         </div>
       </section>
 
+    {/* About Section */}
+<section id="about" className="relative z-10 px-6 py-20 bg-white/5 backdrop-blur-lg">
+  <div className="max-w-7xl mx-auto text-center">
+    <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+      About Me
+    </h2>
+    <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed mb-8">
+      I am a passionate Full-Stack Software Developer specializing in crafting robust and scalable web applications using React, Node.js, and Express. Skilled in API integration and real-time communication technologies, I focus on transforming complex user requirements into intuitive digital experiences.
+    </p>
+    <p className="text-lg text-gray-400 max-w-3xl mx-auto leading-relaxed mb-10">
+      Dedicated to writing clean, maintainable code, optimizing performance, and continuously expanding my expertise in emerging technologies such as AI and video conferencing platforms. I thrive in collaborative environments that push boundaries in innovation and user-centric design.
+    </p>
+    <div className="flex justify-center space-x-8 text-gray-400">
+      <div className="text-center max-w-xs">
+        <BoltIcon className="w-10 h-10 mx-auto mb-3 text-yellow-400" />
+        <h3 className="font-semibold text-white mb-1">Efficient & Clean</h3>
+        <p>Writing optimized, maintainable code with performance in mind.</p>
+      </div>
+      <div className="text-center max-w-xs">
+        <CodeBracketIcon className="w-10 h-10 mx-auto mb-3 text-purple-500" />
+        <h3 className="font-semibold text-white mb-1">Full-Stack Expertise</h3>
+        <p>End-to-end development from UI to backend services & API design.</p>
+      </div>
+      <div className="text-center max-w-xs">
+        <RocketLaunchIcon className="w-10 h-10 mx-auto mb-3 text-pink-500" />
+        <h3 className="font-semibold text-white mb-1">Continuous Improvement</h3>
+        <p>Always learning and adopting latest tools and best practices.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+    
       {/* Footer */}
-      <footer className="relative z-10 px-6 py-12 border-t border-white/10 bg-white/5 backdrop-blur-lg">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex items-center justify-center space-x-3 mb-6">
-            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg flex items-center justify-center">
-              <SparklesIcon className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-             {APP_NAME}
-            </span>
-          </div>
-          <p className="text-gray-400 mb-6">The future of AI conversations, today.</p>
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-gray-400">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-white transition-colors">Support</a>
-            <a href="#" className="hover:text-white transition-colors">Contact</a>
-          </div>
-          <div className="mt-8 pt-8 border-t border-white/10 text-gray-500">
-            © 2025 Gemini AI. All rights reserved.
-          </div>
-        </div>
-      </footer>
+      <footer className="relative z-10 px-6 py-12 border-t border-white/20    backdrop-blur-lg">
+  <div className="max-w-7xl mx-auto text-center">
+    <div className="flex items-center justify-center space-x-3 mb-6">
+      <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg flex items-center justify-center">
+        <SparklesIcon className="w-5 h-5 text-white" />
+      </div>
+      <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+        {APP_NAME}
+      </span>
+    </div>
+    <p className="text-gray-400 mb-6">The future of AI conversations, today.</p>
+
+    {/* Social Links Section */}
+    <div className="flex justify-center space-x-6 mb-8 text-gray-400">
+      <a href="https://x.com/ahankhan474" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" aria-label="Twitter">
+        <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M23 3a10.9 10.9 0 01-3.14 1.53A4.48 4.48 0 0022.4.36a9.18 9.18 0 01-2.88 1.1A4.52 4.52 0 0015.5 0c-2.5 0-4.51 2.1-4.51 4.69 0 .37.04.73.12 1.08A12.85 12.85 0 013 1.64a4.63 4.63 0 00-.61 2.36c0 1.62.81 3.02 2.06 3.85a4.42 4.42 0 01-2.04-.57v.06c0 2.27 1.58 4.17 3.67 4.6a4.49 4.49 0 01-2.03.08 4.6 4.6 0 004.23 3.1A9.06 9.06 0 012 19.54a12.83 12.83 0 006.92 2.03c8.3 0 12.84-7.07 12.84-13.21 0-.2 0-.39-.01-.57A9.22 9.22 0 0023 3z"/>
+        </svg>
+      </a>
+      <a href="https://github.com/MdShahnawaz474" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" aria-label="GitHub">
+        <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.19 6.84 9.52.5.09.68-.22.68-.48 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.34-3.37-1.34-.45-1.17-1.1-1.48-1.1-1.48-.9-.62.07-.61.07-.61 1 .07 1.53 1.04 1.53 1.04.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.93 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.54 9.54 0 012.5-.34c.85 0 1.71.11 2.5.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.83-2.34 4.67-4.57 4.92.36.31.68.92.68 1.86 0 1.34-.01 2.42-.01 2.75 0 .27.18.58.69.48A10.02 10.02 0 0022 12c0-5.52-4.48-10-10-10z"/>
+        </svg>
+      </a>
+      <a href="https://www.linkedin.com/in/md-shahnawaz-a053a122a/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" aria-label="LinkedIn">
+        <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.29c-.97 0-1.75-.78-1.75-1.75S5.53 5.21 6.5 5.21s1.75.78 1.75 1.75-.78 1.75-1.75 1.75zm13.5 10.29h-3v-4.5c0-1.07-.02-2.45-1.49-2.45-1.49 0-1.72 1.16-1.72 2.37V19h-3v-9h2.88v1.23h.04c.4-.76 1.38-1.56 2.84-1.56 3.04 0 3.6 2 3.6 4.59V19z"/>
+        </svg>
+      </a>
+    </div>
+
+    <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-gray-400">
+      <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+      <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+      <a href="#" className="hover:text-white transition-colors">Support</a>
+      <a href="#" className="hover:text-white transition-colors">Contact</a>
+    </div>
+
+    <div className="mt-8 pt-8 border-t border-white/10 text-gray-500 text-sm">
+      © 2025 {APP_NAME}. All rights reserved.
+      <br />
+      <span className="block mt-2 text-gray-400">
+        Developed with ❤️ by <a href="https://yourwebsite.com" target="_blank" rel="noopener noreferrer" className="hover:text-white underline font-semibold">Shahnawaz</a>
+      </span>
+    </div>
+  </div>
+</footer>
 
     </div>
   );
