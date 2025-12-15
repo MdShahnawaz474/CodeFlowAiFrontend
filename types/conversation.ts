@@ -36,8 +36,8 @@ export interface ChatContextType {
   loading: boolean;
   error: string | null;
   actionLoading: boolean;  // For message sending
-  createLoading: boolean;  // ✅ Add this
-  deleteLoading: boolean;  // ✅ Add this
+  createLoading: boolean;  
+  deleteLoading: boolean;  
   
   createNewChat: (prompt: string, model?: string) => Promise<Conversation>;
   sendMessage: (chatId: string, prompt: string) => Promise<Conversation>;
